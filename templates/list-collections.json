@@ -1,0 +1,1 @@
+{"sections":{"main":{"type":"template--collections-list","blocks":{"grid-card-title":{"type":"grid-card-title","settings":{}},"grid-card-price":{"type":"grid-card-price","settings":{}}},"block_order":["grid-card-title","grid-card-price"],"settings":{"images-per-row":3,"collections_per_page":16,"layout":"preview"}}},"order":["main"]}

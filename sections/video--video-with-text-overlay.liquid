@@ -1,0 +1,985 @@
+{{ 'section-video-with-text-overlay.min.css' | asset_url | stylesheet_tag }}
+
+{% capture textalignment %}
+    {% case section.settings.textAlignment %}
+    {% when 'top-left' %}
+        text-align-top-left
+    {% when 'top-center' %}
+        text-align-top-center
+    {% when 'top-right' %}
+        text-align-top-right
+    {% when 'center-left' %}
+        text-align-center-left
+    {% when 'center' %}
+        text-align-center
+    {% when 'center-right' %}
+        text-align-center-right
+    {% when 'bottom-left' %}
+        text-align-bottom-left
+    {% when 'bottom-center' %}
+        text-align-bottom-center
+    {% when 'bottom-right' %}
+        text-align-bottom-right
+    {% endcase %}
+{% endcapture %}
+
+{% capture textalignmentmobile %}
+    {% case section.settings.textAlignmentMobile %}
+    {% when 'top-left' %}
+        mobile-text-align-top-left
+    {% when 'top-center' %}
+        mobile-text-align-top-center
+    {% when 'top-right' %}
+        mobile-text-align-top-right
+    {% when 'center-left' %}
+        mobile-text-align-center-left
+    {% when 'center' %}
+        mobile-text-align-center
+    {% when 'center-right' %}
+        mobile-text-align-center-right
+    {% when 'bottom-left' %}
+        mobile-text-align-bottom-left
+    {% when 'bottom-center' %}
+        mobile-text-align-bottom-center
+    {% when 'bottom-right' %}
+        mobile-text-align-bottom-right
+    {% endcase %}
+{% endcapture %}
+
+{% capture desktopheight %}
+    {% case section.settings.desktopHeight %}
+    {% when '450' %}
+        desktop-height-450
+    {% when '550' %}
+        desktop-height-550
+    {% when '650' %}
+        desktop-height-650
+    {% when '750' %}
+        desktop-height-750
+    {% when 'fullscreen' %}
+        desktop-height-fullscreen
+    {% endcase %}
+{% endcapture %}
+
+{% capture mobileheight %}
+    {% case section.settings.mobileHeight %}
+    {% when '250' %}
+        mobile-height-250
+    {% when '350' %}
+        mobile-height-350
+    {% when '450' %}
+        mobile-height-450
+    {% when '550' %}
+        mobile-height-550
+    {% when 'fullscreen' %}
+        mobile-height-fullscreen
+    {% when 'fit' %}
+        mobile-height-fit
+    {% endcase %}
+{% endcapture %}
+
+{% capture isplaceholder %}
+    {% if section.settings.url contains "watch?v=_9VUPq3SxOc" %}
+        is-placeholder
+    {% endif %}
+{% endcapture %}
+
+{% style %}
+    @media (max-width: 767px) {
+        {% unless section.settings.video_mobile == blank and section.settings.url_mobile == blank %}
+            .hero-video--media.{{ section.id }}-hero-video--desktop {
+                display: none;
+            }
+        {% else %}
+            .hero-video--media.{{ section.id }}-hero-video--mobile {
+                display: none;
+            }
+        {% endunless %}
+    }
+
+    @media (min-width: 768px) {
+        .hero-video--media.{{ section.id }}-hero-video--mobile {
+            display: none;
+        }
+    }
+{% endstyle %}
+
+<section
+    {% if section.settings.section_width == 'page' %}class="container"{% endif %}
+    data-wetheme-section-type="video--video-with-text-overlay"
+    data-wetheme-section-id="{{ section.id }}"
+    tabindex="0"
+    style="padding-top:{{ section.settings.padding_top }}px;padding-bottom:{{ section.settings.padding_bottom }}px;"
+>
+    <div class="video-with-text-overlay__wrapper homepage-sections-wrapper homepage-content--{{ section.id }} hero-video {{ desktopheight | strip }} {{ mobileheight | strip }} {{ isplaceholder | strip }}">
+        <div class="hero-video--wrapper">
+            
+            {% assign type = 'mp4' %}
+            {% unless section.settings.video %}
+                {% assign type = section.settings.url.type %}
+            {% endunless %}
+
+            {% comment %} Desktop video {% endcomment %}
+            <div class="hero-video--media {{ section.id }}-hero-video--desktop hero-video--{{ type }}{% if type == 'youtube' or type == 'vimeo' %} embed-container{% endif %}">
+                {% comment %} Native video (desktop) {% endcomment %}
+                {% if section.settings.video %}
+                    {% render 'native-video' with video: section.settings.video, autoplay: true, loop: true, muted: true, overlay: false, controls: false %}
+                {% endif %}
+
+                {% comment %} External video (mobile) {% endcomment %}
+                {% unless section.settings.video %}
+                    {% if section.settings.url %}
+                        <wetheme-video
+                            data-selector="wetheme-video"
+                            hero="true"
+                            video-type="{{ type }}"
+                            url="{{ section.settings.url }}"
+                            autoplay="true"
+                            loop="true"
+                            mute="true"
+                            hide-controls="true"
+                        >
+                        </wetheme-video>
+                    {% endif %}
+                {% endunless %}
+            </div>
+
+            {% assign mobile_type = 'mp4' %}
+            {% unless section.settings.video_mobile %}
+                {% assign mobile_type = section.settings.url_mobile.type %}
+            {% endunless %}
+
+            {% comment %} Mobile video {% endcomment %}
+            <div class="hero-video--media {{ section.id }}-hero-video--mobile hero-video--{{ mobile_type }}{% if mobile_type == 'youtube' or mobile_type == 'vimeo' %} embed-container{% endif %}">
+                {% comment %} Native video (mobile) {% endcomment %}
+                {% if section.settings.video_mobile %}
+                    {% render 'native-video' with video: section.settings.video_mobile, autoplay: true, loop: true, muted: true, overlay: false, controls: false, video_selector: 'native-video-mobile', overlay_selector: 'native-video-overlay-mobile', play_button_selector: 'native-video-play-button-mobile' %}
+                {% endif %}
+
+                {% comment %} External video (mobile) {% endcomment %}
+                {% unless section.settings.video_mobile %}
+                    {% if section.settings.url_mobile %}
+                        <wetheme-video
+                            data-selector="wetheme-video-mobile"
+                            hero="true"
+                            video-type="{{ mobile_type }}"
+                            url="{{ section.settings.url_mobile }}"
+                            autoplay="true"
+                            loop="true"
+                            mute="true"
+                            hide-controls="true"
+                        >
+                        </wetheme-video>
+                    {% endif %}
+                {% endunless %}
+            </div>
+            <div class="hero-video--text">
+                <div class="hero-video--text-content {{ textalignment | strip }} {{ textalignmentmobile | strip }}">
+										{% comment %} Overlay {% endcomment %}
+										<div class="text-content--overlay"></div>
+										{% comment %} Text content {% endcomment %}
+                    <div class="text-content--inner wow fadeInUp">
+                        {% if section.settings.subheading != blank %}
+                        <h3 class="type-subheading{% if section.settings.title != blank %} typography--padding-bottom {% endif %}"> {{ section.settings.subheading | escape }}</h3>
+                        {% endif %}
+                        {% if section.settings.title != blank %}
+                        <div class="hero-video--text-title">
+                            <h1 class="text-size-{{ section.settings.heading--text-size }}px wow fadeInUp">{{ section.settings.title }}</h1>
+                        </div>
+                        {% endif %}
+                        {% if section.settings.text != blank %}
+                        <div class="hero__text textarea rte">{{ section.settings.text }}</div>
+                        {% endif %}
+                        {% if section.settings.button_label != blank %}
+                        <div class="hero-video--button">
+                            <a class="btn" href="{{ section.settings.button_link }}" tabindex="0">{{ section.settings.button_label }}</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+		/* Video overlay */
+		.homepage-content--{{ section.id }} .hero-video--text .text-content--overlay {
+			background-color: {{ section.settings.videoOverlayColor }};
+			opacity: {{ section.settings.overlayOpacity | divided_by: 100.0 }};
+		}
+
+		/* Text color */
+    .homepage-content--{{ section.id }} .hero-video--text {
+			color: {{ section.settings.textColor }};
+    }
+
+		/* Button colors */
+		.homepage-content--{{ section.id }} .hero-video--text .hero-video--button .btn {
+			color: {{ section.settings.buttonTextColor }};
+			background-color: {{ section.settings.buttonBackgroundColor }};
+		}
+
+		/* Button hover colors */
+		.homepage-content--{{ section.id }} .hero-video--text .hero-video--button .btn:hover {
+			color: {{ section.settings.buttonTextColor }};
+			background-color: {{ section.settings.buttonBackgroundHoverColor }};
+		}
+
+		/* Font sizes */
+		.homepage-content--{{ section.id }} .hero-video--text h3.type-subheading {
+      font-size: {{ section.settings.subheading--text-size }}px;
+      line-height: normal;
+    }
+
+		.homepage-content--{{ section.id }} .hero-video--text .textarea {
+      font-size: {{ section.settings.body--text-size }}px;
+    }
+</style>
+
+{% schema %}
+{
+    "name": {
+      "en": "Video with text overlay",
+      "de": "Video mit Texteinblendung",
+      "es": "Vídeo con superposición de texto",
+      "fr": "Vidéo avec superposition de texte",
+      "pt-PT": "Vídeo com sobreposição de texto"
+    },
+    "class": "e",
+    "settings": [
+        {
+            "type": "header",
+            "content": {
+                "en": "Desktop",
+                "de": "Desktop",
+                "es": "Escritorio",
+                "fr": "Bureau",
+                "pt-PT": "Desktop"
+            }
+        },
+        {
+            "type": "video",
+            "id": "video",
+            "label": {
+							"en": "Video upload",
+							"de": "Video-Upload",
+							"es": "Subir vídeo",
+							"fr": "Téléchargement de la vidéo",
+							"pt-PT": "Carregar vídeo"
+						}
+        },
+        {
+            "id": "url",
+            "type": "video_url",
+            "label": {
+                "en": "Video URL",
+                "de": "Video-URL",
+                "es": "URL del vídeo",
+                "fr": "URL de la vidéo",
+                "pt-PT": "URL do Vídeo"
+            },
+            "info": {
+                "en": "Accepts YouTube and Vimeo [read more](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)",
+                "de": "Akzeptiert YouTube und Vimeo [mehr erfahren](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)",
+                "es": "Acepta YouTube y Vimeo [más información](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)",
+                "fr": "Accepte YouTube et Vimeo [en savoir plus](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)",
+                "pt-PT": "Aceita YouTube e Vimeo [ler mais](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)"
+            },
+            "accept": [
+                "youtube",
+                "vimeo"
+            ],
+            "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc"
+        },
+				{
+					"type": "select",
+					"id": "desktopHeight",
+					"label": {
+						"en": "Section height",
+						"de": "Höhe der Sektion",
+						"es": "Altura de la sección",
+						"fr": "Hauteur de la section",
+						"pt-PT": "Altura da secção"
+					},
+					"default": "fullscreen",
+					"options": [
+							{
+									"value": "fullscreen",
+									"label": {
+											"en": "Fullscreen",
+											"de": "Vollbild",
+											"es": "Pantalla completa",
+											"fr": "Plein écran",
+											"pt-PT": "Ecrã inteiro"
+									}
+							},
+							{
+									"value": "450",
+									"label": {
+											"en": "Small",
+											"de": "Klein",
+											"es": "Pequeño",
+											"fr": "Petite",
+											"pt-PT": "Pequeno"
+									}
+							},
+							{
+									"value": "550",
+									"label": {
+											"en": "Medium",
+											"de": "Mittel",
+											"es": "Mediano",
+											"fr": "Moyenne",
+											"pt-PT": "Médio"
+									}
+							},
+							{
+									"value": "650",
+									"label": {
+											"en": "Large",
+											"de": "Groß",
+											"es": "Grande",
+											"fr": "Grande",
+											"pt-PT": "Grande"
+									}
+							},
+							{
+									"value": "750",
+									"label": {
+											"en": "Extra Large",
+											"de": "Extra groß",
+											"es": "Muy grande",
+											"fr": "Extra grande",
+											"pt-PT": "Extra Grande"
+									}
+							}
+					]
+				},
+				{
+					"type": "select",
+					"id": "textAlignment",
+					"label": {
+							"en": "Text position (desktop)",
+							"de": "Textposition (Desktop)",
+							"es": "Posición del texto (escritorio)",
+							"fr": "Position du texte (bureau)",
+							"pt-PT": "Posição do texto (desktop)"
+					},
+					"default": "center",
+					"options": [
+							{
+									"value": "top-left",
+									"label": {
+											"en": "Top left",
+											"de": "Oben links",
+											"es": "Esquina superior izquierda",
+											"fr": "En haut à gauche",
+											"pt-PT": "Canto superior esquerdo"
+									}
+							},
+							{
+									"value": "top-center",
+									"label": {
+											"en": "Top center",
+											"de": "Oben Mitte",
+											"es": "Zona superior central",
+											"fr": "En haut au centre",
+											"pt-PT": "Centro superior"
+									}
+							},
+							{
+									"value": "top-right",
+									"label": {
+											"en": "Top right",
+											"de": "Oben rechts",
+											"es": "Esquina superior derecha",
+											"fr": "En haut à droite",
+											"pt-PT": "Canto superior direito"
+									}
+							},
+							{
+									"value": "center-left",
+									"label": {
+											"en": "Center left",
+											"de": "Mitte links",
+											"es": "Zona central izquierda",
+											"fr": "Centre gauche",
+											"pt-PT": "Centrar à esquerda"
+									}
+							},
+							{
+									"value": "center",
+									"label": {
+											"en": "Center",
+											"de": "Mitte",
+											"es": "Zona central",
+											"fr": "Centre",
+											"pt-PT": "Centro"
+									}
+							},
+							{
+									"value": "center-right",
+									"label": {
+											"en": "Center right",
+											"de": "Mitte rechts",
+											"es": "Zona central derecha",
+											"fr": "Centre droit",
+											"pt-PT": "Centrar à direita"
+									}
+							},
+							{
+									"value": "bottom-left",
+									"label": {
+											"en": "Bottom left",
+											"de": "unten links",
+											"es": "esquina inferior izquierda",
+											"fr": "en bas à gauche",
+											"pt-PT": "Canto inferior esquerdo"
+									}
+							},
+							{
+									"value": "bottom-center",
+									"label": {
+											"en": "Bottom center",
+											"de": "unten Mitte",
+											"es": "Zona inferior central",
+											"fr": "en bas au centre",
+											"pt-PT": "Centro inferior"
+									}
+							},
+							{
+									"value": "bottom-right",
+									"label": {
+											"en": "Bottom right",
+											"de": "Unten rechts",
+											"es": "Esquina inferior derecha",
+											"fr": "En bas à droite",
+											"pt-PT": "Canto inferior direito"
+									}
+							}
+					]
+				},
+				{
+					"type": "header",
+					"content": {
+							"en": "Mobile",
+							"de": "Mobil",
+							"es": "Móvil",
+							"fr": "Mobile",
+							"pt-PT": "Móvel"
+					}
+				},
+        {
+            "type": "video",
+            "id": "video_mobile",
+            "label": {
+                "en": "Video upload",
+                "de": "Video-Upload",
+                "es": "Subir vídeo",
+                "fr": "Téléchargement de la vidéo",
+                "pt-PT": "Carregar vídeo"
+            }
+        },
+        {
+            "id": "url_mobile",
+            "type": "video_url",
+            "label": {
+                "en": "Video URL",
+                "de": "Video-URL",
+                "es": "URL del vídeo",
+                "fr": "URL de la vidéo",
+                "pt-PT": "URL do Vídeo"
+            },
+            "info": {
+                "en": "Accepts YouTube and Vimeo [read more](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)",
+                "de": "Akzeptiert YouTube und Vimeo [mehr erfahren](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)",
+                "es": "Acepta YouTube y Vimeo [más información](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)",
+                "fr": "Accepte YouTube et Vimeo [en savoir plus](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)",
+                "pt-PT": "Aceita YouTube e Vimeo [ler mais](https://support.eightthemes.com/hc/en-us/articles/360020250318-Product-Media#Videos)"
+            },
+            "accept": [
+                "youtube",
+                "vimeo"
+            ]
+        },
+        {
+            "type": "select",
+            "id": "mobileHeight",
+            "label": {
+                "en": "Section height",
+                "de": "Höhe der Sektion",
+                "es": "Altura de la sección",
+                "fr": "Hauteur de la section",
+                "pt-PT": "Altura da secção"
+            },
+            "default": "fullscreen",
+            "options": [
+                {
+                    "value": "fullscreen",
+                    "label": {
+                        "en": "Fullscreen",
+                        "de": "Vollbild",
+                        "es": "Pantalla completa",
+                        "fr": "Plein écran",
+                        "pt-PT": "Ecrã inteiro"
+                    }
+                },
+                {
+                    "value": "fit",
+                    "label": {
+                        "en": "Fit to screen width",
+                        "de": "An Bildschirmbreite anpassen",
+                        "es": "Ajustar al ancho de la pantalla",
+                        "fr": "Ajuster à la largeur de l'écran",
+                        "pt-PT": "Ajustar à largura do ecrã"
+                    }
+                },
+                {
+                    "value": "250",
+                    "label": {
+                        "en": "Small",
+                        "de": "Klein",
+                        "es": "Pequeño",
+                        "fr": "Petite",
+                        "pt-PT": "Pequeno"
+                    }
+                },
+                {
+                    "value": "350",
+                    "label": {
+                        "en": "Medium",
+                        "de": "Mittel",
+                        "es": "Mediano",
+                        "fr": "Moyenne",
+                        "pt-PT": "Médio"
+                    }
+                },
+                {
+                    "value": "450",
+                    "label": {
+                        "en": "Large",
+                        "de": "Groß",
+                        "es": "Grande",
+                        "fr": "Grande",
+                        "pt-PT": "Grande"
+                    }
+                },
+                {
+                    "value": "550",
+                    "label": {
+                        "en": "Extra large",
+                        "de": "Extra groß",
+                        "es": "Muy grande",
+                        "fr": "Extra grande",
+                        "pt-PT": "Extra Grande"
+                    }
+                }
+            ]
+        },
+				{
+					"type": "select",
+					"id": "textAlignmentMobile",
+					"label": {
+							"en": "Text position (mobile)",
+							"de": "Textposition (mobil)",
+							"es": "Posición del texto (móvil)",
+							"fr": "Position du texte (mobile)",
+							"pt-PT": "Posição do texto (móvel)"
+					},
+					"default": "center",
+					"options": [
+							{
+									"value": "top-left",
+									"label": {
+											"en": "Top left",
+											"de": "Oben links",
+											"es": "Esquina superior izquierda",
+											"fr": "En haut à gauche",
+											"pt-PT": "Canto superior esquerdo"
+									}
+							},
+							{
+									"value": "top-center",
+									"label": {
+											"en": "Top center",
+											"de": "Oben Mitte",
+											"es": "Zona superior central",
+											"fr": "En haut au centre",
+											"pt-PT": "Centro superior"
+									}
+							},
+							{
+									"value": "top-right",
+									"label": {
+											"en": "Top right",
+											"de": "Oben rechts",
+											"es": "Esquina superior derecha",
+											"fr": "En haut à droite",
+											"pt-PT": "Canto superior direito"
+									}
+							},
+							{
+									"value": "center-left",
+									"label": {
+											"en": "Center left",
+											"de": "Mitte links",
+											"es": "Zona central izquierda",
+											"fr": "Centre gauche",
+											"pt-PT": "Centrar à esquerda"
+									}
+							},
+							{
+									"value": "center",
+									"label": {
+											"en": "Center",
+											"de": "Mitte",
+											"es": "Zona central",
+											"fr": "Centre",
+											"pt-PT": "Centro"
+									}
+							},
+							{
+									"value": "center-right",
+									"label": {
+											"en": "Center right",
+											"de": "Mitte rechts",
+											"es": "Zona central derecha",
+											"fr": "Centre droit",
+											"pt-PT": "Centrar à direita"
+									}
+							},
+							{
+									"value": "bottom-left",
+									"label": {
+											"en": "Bottom left",
+											"de": "unten links",
+											"es": "esquina inferior izquierda",
+											"fr": "en bas à gauche",
+											"pt-PT": "Canto inferior esquerdo"
+									}
+							},
+							{
+									"value": "bottom-center",
+									"label": {
+											"en": "Bottom center",
+											"de": "unten Mitte",
+											"es": "Zona inferior central",
+											"fr": "en bas au centre",
+											"pt-PT": "Centro inferior"
+									}
+							},
+							{
+									"value": "bottom-right",
+									"label": {
+											"en": "Bottom right",
+											"de": "Unten rechts",
+											"es": "Esquina inferior derecha",
+											"fr": "En bas à droite",
+											"pt-PT": "Canto inferior direito"
+									}
+							}
+					]
+				},
+        {
+            "type": "header",
+            "content": {
+                "en": "Text",
+                "de": "Text",
+                "es": "Texto",
+                "fr": "Texte",
+                "pt-PT": "Texto"
+            }
+        },
+        {
+            "type": "text",
+            "id": "subheading",
+            "label": {
+                "en": "Subheading",
+                "de": "Unterüberschrift",
+                "es": "Subencabezado",
+                "fr": "Sous-rubrique",
+                "pt-PT": "Subtítulo"
+            },
+            "default": {
+                "en": "Subheading",
+                "de": "Unterüberschrift",
+                "es": "Subencabezado",
+                "fr": "Sous-rubrique",
+                "pt-PT": "Subtítulo"
+            }
+        },
+				{
+					"type": "range",
+					"id": "subheading--text-size",
+					"min": 12,
+					"max": 30,
+					"step": 2,
+					"unit": {
+							"en": "px",
+							"de": "px",
+							"es": "px",
+							"fr": "px",
+							"pt-PT": "px"
+					},
+					"label": {
+							"en": "Subheading size",
+							"de": "Größe der Unterrubrik",
+							"es": "Tamaño del subtítulo",
+							"fr": "Taille du sous-titre",
+							"pt-PT": "Tamanho do subtítulo"
+					},
+					"default": 14
+				},
+        {
+            "type": "text",
+            "id": "title",
+            "label": {
+                "en": "Heading",
+                "de": "Überschrift",
+                "es": "Encabezado",
+                "fr": "Rubrique",
+                "pt-PT": "Título"
+            },
+            "default": {
+                "en": "Share your story",
+                "de": "Teilen Sie Ihre Geschichte",
+                "es": "Comparte tu historia",
+                "fr": "Partagez votre histoire",
+                "pt-PT": "Partilhe a sua história"
+            }
+        },
+				{
+					"type": "range",
+					"id": "heading--text-size",
+					"min": 16,
+					"max": 60,
+					"step": 2,
+					"unit": {
+							"en": "px",
+							"de": "px",
+							"es": "px",
+							"fr": "px",
+							"pt-PT": "px"
+					},
+					"label": {
+							"en": "Heading size",
+							"de": "Überschift-Größe",
+							"es": "Tamaño del encabezado",
+							"fr": "Taille de la rubrique",
+							"pt-PT": "Tamanho do título"
+					},
+					"default": 50
+				},
+        {
+            "type": "text",
+            "id": "text",
+            "label": {
+                "en": "Body text",
+                "de": "Fließtext",
+                "es": "Texto del cuerpo",
+                "fr": "Texte du corps",
+                "pt-PT": "Texto do corpo"
+            },
+            "default": {
+                "en": "Here's your chance to make a great first impression",
+                "de": "Hier ist Ihre Chance, einen großartigen ersten Eindruck zu hinterlassen",
+                "es": "Esta es tu oportunidad de causar una buena primera impresión",
+                "fr": "C'est le moment ou jamais de faire une excellente première impression",
+                "pt-PT": "Aqui está a sua oportunidade de causar uma excelente primeira impressão"
+            }
+        },
+				{
+					"type": "range",
+					"id": "body--text-size",
+					"min": 12,
+					"max": 30,
+					"step": 2,
+					"unit": {
+							"en": "px",
+							"de": "px",
+							"es": "px",
+							"fr": "px",
+							"pt-PT": "px"
+					},
+					"label": {
+							"en": "Body text size",
+							"de": "Fließtext-Größe",
+							"es": "Tamaño del texto del cuerpo",
+							"fr": "Taille du texte du corps",
+							"pt-PT": "Tamanho do texto do corpo"
+					},
+					"default": 16
+				},
+				{
+					"type": "text",
+					"id": "button_label",
+					"label": {
+							"en": "Button label",
+							"de": "Buttonbeschriftung",
+							"es": "Etiqueta del botón",
+							"fr": "Étiquette du bouton",
+							"pt-PT": "Etiqueta do botão"
+					}
+				},
+				{
+					"type": "url",
+					"id": "button_link",
+					"label": {
+							"en": "Button link",
+							"de": "Buttonlink",
+							"es": "Enlace del botón",
+							"fr": "Lien du bouton",
+							"pt-PT": "Ligação do botão"
+					}
+				},
+				{
+						"type": "header",
+						"content": {
+								"en": "Colors",
+								"de": "Farben",
+								"es": "Colores",
+								"fr": "Couleurs",
+								"pt-PT": "Cores"
+						}
+				},
+        {
+            "type": "color",
+            "id": "textColor",
+            "label": {
+                "en": "Text",
+                "de": "Text",
+                "es": "Texto",
+                "fr": "Texte",
+                "pt-PT": "Texto"
+            },
+            "default": "#000000"
+        },
+				{
+					"type": "color",
+					"id": "buttonTextColor",
+					"label": {
+							"en": "Button text",
+							"de": "Button-Text",
+							"es": "Texto del botón",
+							"fr": "Texte du bouton",
+							"pt-PT": "Texto do botão"
+					},
+					"default": "#fefefe"
+				},
+				{
+					"type": "color",
+					"id": "buttonBackgroundColor",
+					"label": {
+							"en": "Button background",
+							"de": "Button-Hintergrund",
+							"es": "Fondo del botón",
+							"fr": "Arrière-plan du bouton",
+							"pt-PT": "Fundo do botão"
+					},
+					"default": "#464646"
+				},
+				{
+					"type": "color",
+					"id": "buttonBackgroundHoverColor",
+					"label": {
+							"en": "Button background hover",
+							"de": "Button-Hintergrund hover",
+							"es": "Fondo del botón hover",
+							"fr": "Arrière-plan du bouton hover",
+							"pt-PT": "Fundo do botão hover"
+					},
+					"default": "#6B6B6B"
+				},
+				{
+					"type": "color",
+					"id": "videoOverlayColor",
+					"label": {
+							"en": "Video overlay",
+							"de": "Video-Overlay",
+							"es": "Superposición de vídeo",
+							"fr": "Superposition vidéo",
+							"pt-PT": "Sobreposição de vídeo"
+					},
+					"default": "#DEDEDE"
+				},
+				{
+					"type": "range",
+					"id": "overlayOpacity",
+					"min": 0,
+					"max": 100,
+					"step": 1,
+					"unit": "%",
+					"label": {
+							"en": "Video overlay opacity",
+							"de": "Video-Overlay-Deckkraft",
+							"es": "Opacidad de superposición de vídeo",
+							"fr": "Opacité de superposition vidéo",
+							"pt-PT": "Opacidade de sobreposição de vídeo"
+					},
+					"default": 25
+				},
+        {
+          "type": "header",
+          "content": "Section spacing"
+        },
+        {
+            "type": "radio",
+            "id": "section_width",
+            "label": "Width",
+            "options": [
+                {
+                "value": "full",
+                "label": "Full width"
+                },
+                {
+                "value": "page",
+                "label": "Page width"
+                }
+            ],
+            "default": "full"
+        },
+        {
+            "type": "range",
+            "id": "padding_top",
+            "label": "Padding top",
+            "min": 0,
+            "max": 200,
+            "step": 2,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 200,
+            "step": 2,
+            "unit": "px",
+            "default": 0
+        }
+    ],
+    "presets": [
+        {
+            "name": {
+                "en": "Video with text overlay",
+                "de": "Video mit Texteinblendung",
+                "es": "Vídeo con superposición de texto",
+                "fr": "Vidéo avec superposition de texte",
+                "pt-PT": "Vídeo com sobreposição de texto"
+            },
+            "category": {
+                "en": "Video",
+                "de": "Video",
+                "es": "Vídeo",
+                "fr": "Vidéo",
+                "pt-PT": "Vídeo"
+            }
+        }
+    ],
+    "enabled_on": {
+        "templates": ["index", "collection", "list-collections", "blog", "article", "page", "password", "404", "cart", "search", "product"]
+    }
+}
+{% endschema %}

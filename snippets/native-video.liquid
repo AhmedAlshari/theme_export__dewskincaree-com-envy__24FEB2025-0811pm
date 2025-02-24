@@ -1,0 +1,46 @@
+{% comment %}
+  Renders a native video player with a play button overlay.
+
+  Accepts:
+    - autoplay: Whether the video should autoplay
+    - loop: Whether the video should loop
+    - muted: Whether the video should be muted
+    - controls: Whether the video should have controls
+    - video: The video to play
+    - overlay: The video has an overlay with a play button on load
+    - video_selector: The selector to use for the video (default: native-video)
+    - overlay_selector: The selector to use for the overlay (default: native-video-overlay)
+    - play_button_selector: The selector to use for the play button (default: native-video-play-button)
+
+  Usage:
+    {% render 'native-video' with autoplay: true, loop: true, muted: true, controls: false, video: block.settings.video, overlay: false %}
+{% endcomment %}
+
+{% liquid
+  assign autoplay = autoplay | default: false
+  assign loop = loop | default: false
+  assign muted = muted | default: false
+  assign controls = controls | default: false
+  assign overlay = overlay | default: false
+  assign video_selector = video_selector | default: 'native-video'
+  assign overlay_selector = overlay_selector | default: 'native-video-overlay'
+  assign play_button_selector = play_button_selector | default: 'native-video-play-button'
+%}
+
+<native-video>
+  {% if overlay %}
+    <div
+      class="video__overlay"
+      data-selector="{{ overlay_selector }}"
+    >
+      <div class="video__overlay-button" tabindex="0" data-selector="{{ play_button_selector }}">
+          <div class="video__overlay-button--inner"></div>
+      </div>
+    </div>
+  {% endif %}
+  {{ video | video_tag: autoplay: autoplay, loop: loop, muted: muted, controls: controls, data-selector: video_selector }}
+</native-video>
+
+<safe-load-scripts>
+  <script src="{{ 'component-native-video.js' | asset_url }}" type="module" defer="defer" data-envy-load-key="component-native-video"></script>
+</safe-load-scripts>
